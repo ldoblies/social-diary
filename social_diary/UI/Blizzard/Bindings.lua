@@ -20,9 +20,9 @@ BINDING_NAME_SOCIALDIARY_REMEMBER = "Remember this"
 -- on it. Anyone else -- nobody targeted, or somebody already in the diary --
 -- gets a new note (ns.UI.QuickNote), with them linked on it. The picker is
 -- /sd remember's.
-function SocialDiary_Remember()
+local function Remember()
     local guid = ns.SafeGUID(UnitGUID("target"))
-    if guid and UnitIsPlayer("target") and guid ~= ns.ownGUID then
+    if guid and ns.Plain(UnitIsPlayer("target")) and guid ~= ns.ownGUID then
         if ns.Diary.IsDiary(guid) then
             ns.UI.QuickNote(guid)
         else
@@ -34,6 +34,10 @@ function SocialDiary_Remember()
     ns.UI.QuickNote()
 end
 
+function SocialDiary_Remember()
+    ns.Safely(Remember)
+end
+
 --------------------------------------------------------------------------
 -- JNL-4's keybind, and the addon compartment
 --------------------------------------------------------------------------
@@ -41,9 +45,9 @@ end
 BINDING_NAME_SOCIALDIARY_JOURNAL = "Open the journal"
 
 function SocialDiary_ToggleJournal()
-    ns.UI.ToggleJournal()
+    ns.Safely(ns.UI.ToggleJournal)
 end
 
 function SocialDiary_OnCompartmentClick()
-    ns.UI.ToggleJournal()
+    ns.Safely(ns.UI.ToggleJournal)
 end

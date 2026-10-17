@@ -398,5 +398,5 @@ SLASH_SOCIALDIARY1 = "/sd"
 SLASH_SOCIALDIARY2 = "/socialdiary"
 
 SlashCmdList.SOCIALDIARY = function(input)
-    Dispatch(groups[""], input)
+    ns.Safely(Dispatch, groups[""], input)
 end

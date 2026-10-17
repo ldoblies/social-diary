@@ -83,8 +83,8 @@ function Firsts.Sentence(kind, rec)
     local in_ = zone and (" in " .. zone) or ""
     local text
     if rec.from == "trade" then
-        local giver = Giver(rec)
-        text = giver and (Who(giver) .. " gave you " .. yours) or (Capital(yours) .. " was a gift")
+        local who = Who(Giver(rec))
+        text = who and (who .. " gave you " .. yours) or (Capital(yours) .. " was a gift")
     elseif rec.from == "quest" then
         text = "A quest gave you " .. yours
     elseif rec.from == "vendor" then
@@ -116,8 +116,8 @@ function Firsts.Tip(m, now, bare)
     local _, yours = Words(m.what or m.kind)
     local how = ({ quest = "a quest's reward", vendor = "bought", mail = "by mail", loot = "looted" })[rec.from]
     if rec.from == "trade" then
-        local giver = Giver(rec)
-        how = giver and ("from " .. Who(giver)) or "a gift"
+        local who = Who(Giver(rec))
+        how = who and ("from " .. who) or "a gift"
     end
     local parts = { not bare and ItemName(rec.link) or nil, how or "found",
         (rec.level and ("at level " .. rec.level) or nil), Day(rec.t, now) }

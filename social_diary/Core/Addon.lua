@@ -22,6 +22,16 @@ end
 
 -- Whether debug output is on (/sd debug). It also decides whether /sd help
 -- lists the development commands.
+-- For what the player starts by hand (a key, the compartment, /sd). Lua
+-- errors are hidden by default, so a failure there would look like the
+-- addon had gone; this says so in chat as well.
+function ns.Safely(fn, ...)
+    local ok, err = pcall(fn, ...)
+    if ok then return end
+    ns.Print("ran into an error, please report it: %s", tostring(err))
+    if geterrorhandler then geterrorhandler()(err) end
+end
+
 function ns.DebugOn()
     return (ns.db and ns.db.settings.debug) and true or false
 end

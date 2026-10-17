@@ -9,6 +9,8 @@ All notable changes to Social Diary. Versions follow the `## Version` line in
 
 - Flight paths in _Your Diary_ now use a single Flight Master node
 - Right-click menus inside dungeons no longer break after using Social Diary
+- If the journal fails to open, chat now says so instead of nothing
+- _Your Diary_ no longer breaks on a gift from someone without a name
 
 ## [1.7.0]
 

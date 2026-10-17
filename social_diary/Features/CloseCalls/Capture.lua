@@ -153,7 +153,7 @@ end
 local function Targets(spell)
     local d = Table(spell.combatSpellDetails)
     if not d then return {} end
-    if d.unitName ~= nil or d.amount ~= nil then d = { d } end
+    if d[1] == nil then d = { d } end
     return d
 end
 

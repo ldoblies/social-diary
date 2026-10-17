@@ -236,6 +236,15 @@ local stranger = { t = d0, mapID = MULGORE, link = POUCH, from = "trade", level 
 Eq(Firsts.Sentence("uncommon", loot), "Found your first green in Mulgore: Wolfskin Bracers.", "a green found")
 Eq(Firsts.Sentence("bag", gift), "Koko Skybluff gave you your first bag: Small Brown Pouch.", "a bag given")
 Eq(Firsts.Sentence("bag", stranger), "Your first bag was a gift: Small Brown Pouch.", "a bag from someone gone")
+do
+    local nameless = "Player-4711-0BADF00D"
+    ns.db.characters[nameless] = { names = {} }
+    local gift2 = { t = d0, mapID = MULGORE, link = POUCH, from = "trade", guid = nameless, level = 5 }
+    Eq(Firsts.Sentence("bag", gift2), "Your first bag was a gift: Small Brown Pouch.", "a gift from someone with no name")
+    local _, line = Firsts.Tip({ kind = "bag", find = gift2 }, d0)
+    Check(line:find("a gift", 1, true), "the tip of a gift from someone with no name")
+    ns.db.characters[nameless] = nil
+end
 Eq(Firsts.Sentence("rare", { t = d0, link = BLUE, from = "quest" }), "A quest gave you your first blue: Pathfinder Footpads.",
     "a quest's blue")
 Eq(Firsts.Sentence("bag", { t = d0, mapID = MULGORE, link = POUCH, from = "vendor" }),

@@ -186,3 +186,17 @@ Eq(popup.data, GUID, "the popup does not carry the GUID")
 Eq(popup.args[1], "Bram Redfen", "the popup does not name them")
 Check(mock.AnswerPopup("alt"), "the popup has no 'delete everything'")
 Eq(ns.Diary.IsDiary(GUID), false, "'delete everything' left the entry")
+
+--------------------------------------------------------------------------
+Section("a failure the player started is said in chat")
+
+do
+    local toggle, handler = ns.UI.ToggleJournal, _G.geterrorhandler
+    local caught = {}
+    _G.geterrorhandler = function() return function(err) caught[#caught + 1] = err end end
+    ns.UI.ToggleJournal = function() error("broken record") end
+    local lines = Said(SocialDiary_ToggleJournal)
+    ns.UI.ToggleJournal, _G.geterrorhandler = toggle, handler
+    Check(lines[1] and lines[1]:find("broken record", 1, true), "the journal key failed in silence")
+    Eq(#caught, 1, "the error did not reach the error handler")
+end
