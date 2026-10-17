@@ -10,7 +10,6 @@
 #   uidump.txt   tests/uidump.lua with every testdata entry and zone page
 #   rows.txt     every People row kind through the core and the ledger
 #   tester.txt   /sd testdata's Tester: rows in stored order, and the route
-#   plates.txt   the plates' summaries and checks (plates.sh), PNGs removed
 #
 # The dumps are not tests (they check nothing). rows_dump.lua and
 # tester_dump.lua run beside the harness, so they go into a farm: symlinks
@@ -41,6 +40,4 @@ Farm() {
 Farm rows_dump rows.txt
 Farm tester_dump tester.txt
 
-"$addon/.claude/skills/plates/tools/plates.sh" "$out/plates" > "$out/plates.txt" 2>&1 || true
-rm -f "$out"/plates/*.png
 wc -l "$out"/*.txt
