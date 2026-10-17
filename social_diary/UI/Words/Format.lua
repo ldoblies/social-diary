@@ -226,6 +226,13 @@ function Format.You(me, text)
     end))
 end
 
+-- "as Thrall", for words that do not say "you" (a headline, a tooltip), or
+-- nil where `me` is "you".
+function Format.As(me)
+    if Format.IsYou(me) then return nil end
+    return "as " .. Format.YouName(me)
+end
+
 local RACE_NAMES = { Scourge = "Undead", NightElf = "Night Elf" }
 
 function Format.RaceName(record)

@@ -57,6 +57,7 @@ local function Snapshot(guid, reason)
         relationship = s.entry.relationship,
         lastMet = s.lastMet,
         lastZone = s.lastZone,
+        lastMe = s.lastMe,
         timesMet = s.timesMet,
         fights = ns.Interactions.Fights(guid),
     }
@@ -107,10 +108,14 @@ local function Story(snap, place)
     local when = When(snap.lastMet)
     local where = place and snap.lastZone and (" in " .. Em(snap.lastZone)) or ""
 
+    -- The times met are every character's; the last meeting was one's.
+    local as = Format.As(snap.lastMe)
     if snap.timesMet == 1 then
+        if as then return ("%s met them once, %s%s."):format(Format.YouName(snap.lastMe), Em(when), where) end
         return ("You've met once, %s%s."):format(Em(when), where)
     end
-    return ("You've crossed paths %s, last %s%s."):format(Em(snap.timesMet .. " times"), Em(when), where)
+    return ("You've crossed paths %s, last %s%s%s."):format(Em(snap.timesMet .. " times"),
+        as and (as .. " ") or "", Em(when), where)
 end
 
 -- The record without some of what it says.

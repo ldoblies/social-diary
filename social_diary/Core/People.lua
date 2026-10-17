@@ -89,10 +89,12 @@ end
 
 -- `zone` is where the meeting ended, for "where you last met" (REU-1);
 -- `firstZone` where it began, for "where you first met" (the profile).
-local function Meet(s, from, to, level, zone, firstZone)
+-- `me` is which of the user's characters met them (firstMe, lastMe), for
+-- a shared diary to say so.
+local function Meet(s, from, to, level, zone, firstZone, me)
     s.timesMet = s.timesMet + 1
-    if not s.firstMet or from < s.firstMet then s.firstMet, s.firstZone = from, firstZone or zone end
-    if not s.lastMet or to > s.lastMet then s.lastMet, s.lastZone = to, zone end
+    if not s.firstMet or from < s.firstMet then s.firstMet, s.firstZone, s.firstMe = from, firstZone or zone, me end
+    if not s.lastMet or to > s.lastMet then s.lastMet, s.lastZone, s.lastMe = to, zone, me end
 
     -- "Level then" is their level at the earliest meeting that knew it.
     if level and (not s.levelAt or from < s.levelAt) then
@@ -144,7 +146,7 @@ local function NewStats(guid, entry)
 end
 
 local function AddSession(s, session, p)
-    Meet(s, p.since, p.last, p.levelStart, session.zones[#session.zones], session.zones[1])
+    Meet(s, p.since, p.last, p.levelStart, session.zones[#session.zones], session.zones[1], session.me)
     s.seconds = s.seconds + p.seconds
     for i = 1, #session.zones do AddZone(s, session.zones[i]) end
 end
@@ -156,7 +158,7 @@ local function Finish(s)
         for i = 1, #rows do
             local row = rows[i]
             if not row.session and Rows.Get(row.type).meeting then
-                Meet(s, row.time, row.time, row.theirLevel, row.zone)
+                Meet(s, row.time, row.time, row.theirLevel, row.zone, nil, row.me)
                 AddZone(s, row.zone)
             end
         end

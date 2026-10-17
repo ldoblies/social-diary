@@ -4,6 +4,7 @@
 
 local T = ...
 local F = T.F
+local mock = T.mock
 local Section, Eq = T.Section, T.Eq
 local ns = T.Boot()
 
@@ -124,6 +125,131 @@ end
 T.Check(people > 1, "/sd testdata wrote nobody's rows")
 
 ns.ownGUID = playing
+SlashCmdList.SOCIALDIARY("testdata remove")
+ns.UI.CloseJournal()
+
+--------------------------------------------------------------------------
+Section("whose meeting it was: the profile, the toast and the tooltip")
+
+local function Plain(text) return (text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")) end
+
+local function Meet(me)
+    ns.ownGUID = me
+    mock.now = mock.now + 60
+    ns.Interactions.Add(STRANGER.guid, "trade")
+    ns.ownGUID = playing
+end
+
+local function Story()
+    ns.UI.ShowJournal(STRANGER.guid)
+    for _, line in ipairs(_G.SocialDiaryJournalFrame.profile.timeline.data) do
+        if line.prose == "story" then return Plain(line.text) end
+    end
+end
+
+local function Toast()
+    return Plain(ns.UI.ReunionText(ns.UI.Toast.Snapshot(STRANGER.guid, "group")).stories[1])
+end
+
+local function Tooltip()
+    local lines = {}
+    ns.UI.OnUnitTooltip({ AddLine = function(_, text) lines[#lines + 1] = text end }, { guid = STRANGER.guid })
+    return lines[#lines]
+end
+
+-- The same words as ever: a diary of its own, and the alt reading its own.
+local function AsEver(story, toast, tooltip, what)
+    for _, view in ipairs({ { false, playing }, { true, ALT } }) do
+        ns.diaryShared, ns.ownGUID = view[1], view[2]
+        T.Check(Story():find(story), what .. ", the profile: " .. Story())
+        Eq(Toast(), toast, what .. ", the toast")
+        Eq(Tooltip(), tooltip, what .. ", the tooltip")
+    end
+    ns.diaryShared, ns.ownGUID = true, playing
+end
+
+T.BlankDiary()
+ns.diaryShared = true
+ns.ownGUID = ALT
+ns.Diary.Add(STRANGER.guid, { source = "test" })
+ns.ownGUID = playing
+
+Meet(ALT)
+T.Check(Story():find("^Thessaly met Bram once in Mulgore on "), "met once by the alt: " .. Story())
+Eq(Toast(), "Thessaly met them once, today in Mulgore.", "the toast, met once by the alt")
+Eq(Tooltip(), "Met 1 time  ·  last as Thessaly today", "the tooltip, met once by the alt")
+AsEver("^You met Bram once in Mulgore on ", "You've met once, today in Mulgore.", "Met 1 time  ·  last today",
+    "met once")
+
+Meet(playing)
+T.Check(Story():find("^Thessaly first met Bram in Mulgore on .* You've crossed paths 2 times%."),
+    "first met by the alt: " .. Story())
+Eq(Toast(), "You've crossed paths 2 times, last today in Mulgore.", "the toast, last met by the one playing")
+Eq(Tooltip(), "Met 2 times  ·  last today", "the tooltip, last met by the one playing")
+
+Meet(ALT)
+Eq(Toast(), "You've crossed paths 3 times, last as Thessaly today in Mulgore.", "the toast, last met by the alt")
+Eq(Tooltip(), "Met 3 times  ·  last as Thessaly today", "the tooltip, last met by the alt")
+AsEver("^You first met Bram in Mulgore on ", "You've crossed paths 3 times, last today in Mulgore.",
+    "Met 3 times  ·  last today", "met three times")
+ns.UI.CloseJournal()
+
+--------------------------------------------------------------------------
+Section("whose it was on the timeline: every kind of item")
+
+-- /sd testdata written by the alt, and the kinds it does not write.
+T.BlankDiary()
+ns.ownGUID = ALT
+SlashCmdList.SOCIALDIARY("testdata")
+ns.UI.CloseJournal()
+ns.ownGUID = playing
+
+local function Up(level) return { time = mock.now, row = { type = "level_up", me = ALT, context = { level = level } } } end
+local MADE = {
+    { kind = "climb", time = mock.now, ups = { Up(5), Up(6) } },
+    { kind = "first", time = mock.now, first = { me = ALT, subZone = "Red Cloud Mesa", level = 5 } },
+}
+
+local function Words(item, guid)
+    local _, text, sub, _, full = ns.UI.DescribeItem(item, guid)
+    return text .. "\n" .. (sub or "") .. "\n" .. (full or "")
+end
+
+-- Every line names the alt, in itself, its details or its tooltip, but
+-- their own death, which is theirs; or, `mine` false, none does.
+local named = {}
+local function Walk(item, guid, mine)
+    local words = Words(item, guid)
+    local says = words:find("Thessaly", 1, true) ~= nil
+    if not mine then
+        Eq(says, false, item.kind .. " named the alt: " .. words)
+    elseif not (item.kind == "death" and item.death.guid == guid) then
+        Eq(says, true, item.kind .. " does not say whose it was: " .. words)
+        named[item.kind] = true
+    end
+    for _, child in ipairs(item.all or {}) do Walk(child, guid, mine) end
+    for _, child in ipairs(item.lines or {}) do Walk(child, guid, mine) end
+end
+
+local function WalkAll(mine)
+    for guid in pairs(ns.db.diary) do
+        for _, item in ipairs(ns.Timeline.For(guid)) do Walk(item, guid, mine) end
+        for _, item in ipairs(MADE) do Walk(item, guid, mine) end
+    end
+end
+
+WalkAll(true)
+for _, kind in ipairs({ "session", "visit", "exchange", "row", "climb", "rare", "death", "around", "note",
+    "first", "added" }) do
+    T.Check(named[kind], kind .. ": no line of this kind on the timeline")
+end
+
+ns.diaryShared = false
+WalkAll(false)
+ns.diaryShared, ns.ownGUID = true, ALT
+WalkAll(false)
+ns.ownGUID = playing
+
 SlashCmdList.SOCIALDIARY("testdata remove")
 ns.UI.CloseJournal()
 

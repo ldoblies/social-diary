@@ -83,14 +83,15 @@ local function OnUnitTooltip(tooltip, data)
     end
 
     if s.timesMet > 0 then
-        tooltip:AddLine(("Met %s  ·  last %s"):format(Format.Count(s.timesMet, "time", "times"),
-            Format.Ago(s.lastMet)), 0.6, 0.6, 0.6)
+        local as = Format.As(s.lastMe)
+        tooltip:AddLine(("Met %s  ·  last %s%s"):format(Format.Count(s.timesMet, "time", "times"),
+            as and (as .. " ") or "", Format.Ago(s.lastMet)), 0.6, 0.6, 0.6)
     else
         tooltip:AddLine("Not met since you added them", 0.6, 0.6, 0.6)
     end
 end
 
--- Test hook, kept for a tooltip test (none reads it yet).
+-- Test hook, for the tooltip test (tests/you.lua).
 ns.UI.OnUnitTooltip = OnUnitTooltip
 
 if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall

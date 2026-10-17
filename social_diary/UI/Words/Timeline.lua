@@ -273,8 +273,25 @@ local function Facts(episode, guid)
     return facts
 end
 
+-- Which of the user's characters an item was (Format.As), or nil: a death
+-- says whose in its own words, a note in when it was written.
+local function ItemMe(item)
+    local kind = item.kind
+    if kind == "session" then return item.session.me
+    elseif kind == "visit" then return item.visit.me
+    elseif kind == "exchange" then return item.rows[1].me
+    elseif kind == "row" then return item.row.me
+    elseif kind == "climb" then return item.ups[1].row.me
+    elseif kind == "rare" then return item.me
+    elseif kind == "around" then return item.around.me
+    elseif kind == "first" then return item.first.me
+    elseif kind == "added" then return item.entry.addedBy
+    end
+    return nil
+end
+
 -- TLN-3: the headline and details line cut to the episode's length; the
--- tooltip gets all of it.
+-- tooltip gets all of it. Another character's episode says whose first.
 local function EpisodeText(episode, guid)
     local visitText, facts
     if episode.kind == "visit" then
@@ -287,6 +304,11 @@ local function EpisodeText(episode, guid)
 
     local shown = {}
     for i = 1, math.min(budget, #facts) do shown[i] = facts[i] end
+    local as = Format.As(ItemMe(episode))
+    if as then
+        table.insert(shown, 1, as)
+        table.insert(facts, 1, as)
+    end
     if episode.session and not episode.session.endedAt then
         shown[#shown + 1] = "still going"
         facts[#facts + 1] = "still going"
@@ -315,17 +337,15 @@ local function DescribeNote(note, guid)
     end
     if #others > 0 then full[#full + 1] = "Also about " .. Format.List(others) .. "." end
 
-    local written = "Written at " .. date("%H:%M", note.time)
+    local as = Format.As(note.me)
+    local written = "Written " .. (as and (as .. " ") or "") .. "at " .. date("%H:%M", note.time)
     if note.zone then written = written .. " in " .. note.zone end
     full[#full + 1] = written .. "."
     full[#full + 1] = "Click to change or delete it."
     return text, table.concat(full, "\n")
 end
 
--- Returns the time, the line, an optional second line, the icon and the
--- whole story for the tooltip (nil: the lines are all of it), coloured for a
--- dark tooltip; the page inks them (Style.Inkify).
-function ns.UI.DescribeItem(item, guid)
+local function Describe(item, guid)
     local when = date("%H:%M", item.time)
 
     if IsEpisode(item) then
@@ -376,6 +396,19 @@ function ns.UI.DescribeItem(item, guid)
 
     local kind = ns.Rows.Get(item.row.type)
     return when, kind.text and kind.text(item.row, guid) or item.row.type, nil, kind.icon
+end
+
+-- Returns the time, the line, an optional second line, the icon and the
+-- whole story for the tooltip (nil: the lines are all of it), coloured for a
+-- dark tooltip; the page inks them (Style.Inkify). Another character's line
+-- says whose in its tooltip, unless it names them already.
+function ns.UI.DescribeItem(item, guid)
+    local when, text, sub, icon, full = Describe(item, guid)
+    local me = not IsEpisode(item) and ItemMe(item)
+    if me and Format.As(me) and not text:find(Format.YouName(me), 1, true) then
+        full = (full or text) .. "\nAs " .. Format.YouName(me) .. "."
+    end
+    return when, text, sub, icon, full
 end
 
 -- For the page lines, which lay episodes and visits out, and a note's

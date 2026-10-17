@@ -12,6 +12,7 @@ All notable changes to Social Diary. Versions follow the `## Version` line in
 - If the journal fails to open, chat now says so instead of nothing
 - _Your Diary_ no longer breaks on a gift from someone without a name
 - Deaths are no longer recorded twice, and past doubles are removed
+- A shared diary now says which of your characters met someone
 
 ## [1.7.0]
 

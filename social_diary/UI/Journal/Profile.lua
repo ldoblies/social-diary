@@ -64,10 +64,11 @@ local function Story(s)
             or ""
 
         if s.timesMet == 1 then
-            parts[1] = ("You met %s once%s on %s%s%s."):format(first, where, Em(DayMonth(s.firstMet)),
-                level, together)
+            parts[1] = Format.You(s.firstMe, "{You} met %s once%s on %s%s%s."):format(first, where,
+                Em(DayMonth(s.firstMet)), level, together)
         else
-            parts[1] = ("You first met %s%s on %s%s."):format(first, where, Em(DayMonth(s.firstMet)), level)
+            parts[1] = Format.You(s.firstMe, "{You} first met %s%s on %s%s."):format(first, where,
+                Em(DayMonth(s.firstMet)), level)
             parts[2] = ("You've crossed paths %s%s."):format(Em(s.timesMet .. " times"), together)
         end
 

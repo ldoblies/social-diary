@@ -72,7 +72,7 @@ local LOOSE = {
     Frontispiece = "tests",
     IntroLabel = "tests",
     Slip = "tests",
-    OnUnitTooltip = "tests",        -- kept for a tooltip test; none reads it yet
+    OnUnitTooltip = "tests",        -- the tooltip test (tests/you.lua)
 }
 
 -- Module tables: a table with functions of its own.

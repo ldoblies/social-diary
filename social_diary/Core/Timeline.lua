@@ -229,7 +229,7 @@ local function NewSession(session, guid)
         local rare = p.rares[i]
         present.rare = true
         episode.all[#episode.all + 1] = { kind = "rare", time = rare.time or session.startedAt,
-            rare = rare, activity = "rare", moment = true }
+            rare = rare, me = session.me, activity = "rare", moment = true }
     end
     -- Their deaths and the user's, as on the details line; always a line,
     -- and nothing a headline names.
