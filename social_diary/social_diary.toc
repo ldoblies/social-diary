@@ -206,6 +206,7 @@ Features/Hunts/LuckyCard.lua
 Capture/Menus.lua
 Capture/Group.lua
 Capture/Together.lua
+Capture/Instances.lua
 Capture/Nearby.lua
 Capture/Sightings.lua
 Capture/Journey.lua

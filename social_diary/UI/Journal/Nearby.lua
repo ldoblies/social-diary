@@ -10,8 +10,8 @@
 -- Built from the raw sightings (the last bufferDays days) and the
 -- interaction buffer, for the "dealt with" marks, by ns.Sightings.DayEntries
 -- and QueryDay (Core/Sightings.lua). Nothing is stored here.
--- Sightings never run inside instances (SIG-6); dungeon groups join this
--- page once instance visits (INS-1, INS-2) record their members.
+-- Sightings never run inside instances (SIG-6); dungeon groups are on this
+-- page through their visits (INS-1), which DayEntries reads as well.
 
 local addonName, ns = ...
 
@@ -457,7 +457,7 @@ function ns.UI.RefreshNearbyPage()
     end
     page.days:SetData(items, true)
 
-    page.hint:SetText(("Everyone you passed in the open world. Kept for %d days.")
+    page.hint:SetText(("Everyone you passed or ran a dungeon with. Kept for %d days.")
         :format(ns.BufferDays()))
     page.dayCount:SetText(Format.Count(#days, "day", "days"))
     page.noDays:SetText(#days == 0 and EmptyText() or "")

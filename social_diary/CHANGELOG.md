@@ -5,6 +5,10 @@ All notable changes to Social Diary. Versions follow the `## Version` line in
 
 ## [Unreleased]
 
+### Shiny new Things
+
+- Dungeon runs are now remembered: who was there, bosses and wipes
+
 ### Fixes
 
 - Flight paths in _Your Diary_ now use a single Flight Master node

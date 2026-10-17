@@ -58,6 +58,9 @@ local DIARY = {
         nextSessionId = 1,
         openSession = nil,  -- id of the one open together session (SES-1)
         nextVisitId = 1,    -- Core/Instances.lua's ids (INS-1)
+        -- [charGUID] = the visit each character is in, or has just stepped
+        -- out of and may come back to (Core/Instances.lua).
+        openVisits = {},
         nextNoteId = 1,     -- Core/Notes.lua's ids (DIA-11)
 
         -- The group as last seen, so a /reload does not read every member as

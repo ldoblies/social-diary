@@ -100,6 +100,7 @@ _G.UnitFactionGroup = function(token) return Unpack(Unit(token), "faction") end
 _G.UnitClassification = function(token) return Unpack(Unit(token), "classification") or "normal" end
 _G.UnitIsInMyGuild = function(token) local u = Unit(token); return u ~= nil and u.inGuild == true end
 _G.UnitCanAttack = function(_, token) local u = Unit(token); return u ~= nil and u.hostile == true end
+_G.UnitGroupRolesAssigned = function(token) local u = Unit(token); return u and u.role or "NONE" end
 
 -- Returns localizedClass, englishClass, localizedRace, englishRace, sex,
 -- name, realm.

@@ -352,17 +352,57 @@ local function DayFinder()
     end
 end
 
--- Every day with raw sightings, newest first: { start, count }, where count
--- is people, not rows. A row that runs past midnight counts on both days.
+-- Sightings never run inside instances (SIG-6), so a dungeon group is seen
+-- through its visit (INS-1) instead: a row for each member, from entering
+-- to leaving, under the dungeon's name, for the visits still inside the
+-- window. Made per read, never stored.
+local function VisitRows()
+    local byGuid, now = {}, ns.Now()
+    local cutoff = ns.Cutoff(now)
+    for _, visit in pairs(ns.db.instances) do
+        local last = visit.endedAt or now
+        if visit.startedAt and last >= cutoff then
+            for _, member in ipairs(visit.members or {}) do
+                local guid = member.guid
+                if guid and guid ~= visit.me and guid ~= ns.ownGUID then
+                    local rows = ns.ListFor(byGuid, guid)
+                    rows[#rows + 1] = { time = visit.startedAt, last = last, zone = visit.name }
+                end
+            end
+        end
+    end
+    for _, rows in pairs(byGuid) do
+        table.sort(rows, function(a, b) return a.time < b.time end)
+    end
+    return byGuid
+end
+
+-- [guid] = { rows, ... }: their sighting rows and their visits' rows, each
+-- list oldest first.
+local function RowLists()
+    local lists = {}
+    for guid, rows in pairs(ns.db.sightings) do lists[guid] = { rows } end
+    for guid, rows in pairs(VisitRows()) do
+        local list = ns.ListFor(lists, guid)
+        list[#list + 1] = rows
+    end
+    return lists
+end
+
+-- Every day with raw sightings or a visit's group, newest first: { start,
+-- count }, where count is people, not rows. A row that runs past midnight
+-- counts on both days.
 function Sightings.Days()
     local people = {}
     local DayOf = DayFinder()
 
-    for _, rows in pairs(ns.db.sightings) do
+    for _, lists in pairs(RowLists()) do
         local on = {}
-        for i = 1, #rows do
-            on[DayOf(rows[i].time)] = true
-            on[DayOf(Last(rows[i]))] = true
+        for _, rows in ipairs(lists) do
+            for i = 1, #rows do
+                on[DayOf(rows[i].time)] = true
+                on[DayOf(Last(rows[i]))] = true
+            end
         end
         for day in pairs(on) do people[day] = (people[day] or 0) + 1 end
     end
@@ -380,14 +420,16 @@ function Sightings.OnDay(dayStart)
     local dayEnd = dayStart + DAY
     local list = {}
 
-    for guid, rows in pairs(ns.db.sightings) do
+    for guid, lists in pairs(RowLists()) do
         local best, hostile
-        for i = 1, #rows do
-            local row = rows[i]
-            if row.time >= dayEnd then break end
-            if Last(row) >= dayStart then
-                if not best or Last(row) > Last(best) then best = row end
-                if row.hostile then hostile = true end
+        for _, rows in ipairs(lists) do
+            for i = 1, #rows do
+                local row = rows[i]
+                if row.time >= dayEnd then break end
+                if Last(row) >= dayStart then
+                    if not best or Last(row) > Last(best) then best = row end
+                    if row.hostile then hostile = true end
+                end
             end
         end
         if best then
