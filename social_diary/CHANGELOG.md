@@ -11,6 +11,7 @@ All notable changes to Social Diary. Versions follow the `## Version` line in
 - Right-click menus inside dungeons no longer break after using Social Diary
 - If the journal fails to open, chat now says so instead of nothing
 - _Your Diary_ no longer breaks on a gift from someone without a name
+- Deaths are no longer recorded twice, and past doubles are removed
 
 ## [1.7.0]
 

@@ -116,6 +116,7 @@ Eq(ns.Interactions.Fights(FOE).deaths, 1, "deaths")
 local OTHER = F.STRANGER2.guid
 mock.now = mock.now + 600
 mock.inCombat = true
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 Eq(ns.Interactions.Fights(FOE).deaths, 2, "the second guess")
 recaps.latest = Blow(OTHER, "Tullus", mock.now, "Fireball")
@@ -127,6 +128,7 @@ Eq(ns.Interactions.Fights(OTHER).deaths, 1, "the death did not move to the recap
 -- The recap names a creature: no player killed you, and the guess goes.
 mock.now = mock.now + 600
 mock.inCombat = true
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 recaps.latest = Blow("Creature-0-4620-1-6-2955-00002C5F0D", "Plainstrider", mock.now)
 mock.inCombat = false
@@ -136,6 +138,7 @@ Eq(ns.Interactions.Fights(FOE).deaths, 1, "a creature's kill stayed on the guess
 -- No guess at the moment, but the recap names a player: written down then.
 mock.SetUnit("target", nil)
 mock.now = mock.now + 600
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 recaps.latest = Blow(FOE, "Romulus", mock.now, "Backstab")
 mock.fire("PLAYER_REGEN_ENABLED")
@@ -241,6 +244,7 @@ ns.On("SD_DEATH_RECAP", Heard)
 mock.now = mock.now + 600
 mock.inCombat = true
 mock.SetUnit("target", HOSTILE)
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 Eq(#told, 1, "the death was not told at the moment")
 Eq(told[1] and told[1].death.guess.guid, FOE, "the guess told")

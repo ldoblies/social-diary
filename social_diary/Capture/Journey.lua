@@ -219,6 +219,7 @@ ns.On("QUEST_ACCEPTED", function(_, ...)
 end)
 
 ns.On("PLAYER_DEAD", function()
+    if ns.DiedAgain() then return end
     Journey.Act(Journey.Kept(), "deaths", 1)
 end)
 

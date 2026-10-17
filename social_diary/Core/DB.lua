@@ -23,7 +23,7 @@ local addonName, ns = ...
 -- the per-character file. They move apart: a file can be converted at one
 -- login while a diary that is not loaded waits for its next. Bump one with a
 -- step in its list below.
-local SCHEMA_VERSION = 4     -- a diary
+local SCHEMA_VERSION = 5     -- a diary
 local ACCOUNT_SCHEMA = 1     -- SocialDiaryDB, apart from the shared diary
 local CHARACTER_SCHEMA = 1   -- SocialDiaryCharDB, apart from its own diary
 
@@ -146,10 +146,112 @@ end
 -- The migration steps, by the version each one reaches: STEPS.diary[5]
 -- takes a diary from 4 to 5. A step gets the table as saved, before any
 -- default is filled in, so a renamed key is still under its old name and the
--- new one is not yet there. There are none yet: diary schema 4 and file
--- schema 1 (11 Oct 2026) began the per-character files without carrying
--- older diaries forward, as nobody but the developer had one.
+-- new one is not yet there. Diary schema 4 and file schema 1 (11 Oct 2026)
+-- began the per-character files without carrying older diaries forward, as
+-- nobody but the developer had one.
 local STEPS = { diary = {}, account = {}, character = {} }
+
+-- Seconds: two of the user's deaths this close are one PLAYER_DEAD the
+-- client told twice (Core/Events.lua's one death a life).
+local TWICE = 2
+
+-- The count a death at `t` put on the route (act.deaths, Journey.Act),
+-- taken back: from what is still open if it was open then, in Act's order,
+-- else from the last saved segment begun by `t` that is no flight
+-- (Journey.CountedOn's rule), else from the deaths waiting for a segment.
+local function Uncount(j, t)
+    local function Take(act)
+        if not (type(act) == "table" and type(act.deaths) == "number" and act.deaths >= 1) then return false end
+        act.deaths = act.deaths > 1 and act.deaths - 1 or nil
+        return true
+    end
+    local o = type(j.open) == "table" and j.open or {}
+    local road = o.road
+    local begun = {
+        { o.dungeon, o.dungeon and o.dungeon.from },
+        { o.c, o.c and o.c.since },
+        { road, road and road.crumbs and road.crumbs[1] and road.crumbs[1].t },
+    }
+    for _, b in ipairs(begun) do
+        if type(b[2]) == "number" and b[2] <= t and Take(b[1].act) then return end
+    end
+    local raw = type(j.segments) == "table" and j.segments or {}
+    for i = #raw, 1, -1 do
+        local item = raw[i]
+        local seg = type(item) == "table" and item or type(item) == "string" and ns.Journey.Unpack(item) or nil
+        if seg and seg.from <= t and seg.kind ~= "flight" then
+            if Take(seg.act) then
+                if type(item) == "string" then raw[i] = ns.Journey.Pack(seg) end
+                return
+            end
+            break
+        end
+    end
+    Take(o.loose)
+end
+
+-- `list` without the records told twice: one with the same `Key` (nil for
+-- none) as one kept before it, within TWICE of its `Time`. `Dropped` is
+-- told of each.
+local function Deduped(list, Key, Time, Dropped)
+    local kept, lastBy = {}, {}
+    for _, rec in ipairs(list) do
+        local key = type(rec) == "table" and Key(rec) or nil
+        local last = key ~= nil and lastBy[key]
+        local t, before = last and Time(rec), last and Time(last)
+        if type(t) == "number" and type(before) == "number" and math.abs(t - before) <= TWICE then
+            if Dropped then Dropped(rec) end
+        else
+            kept[#kept + 1] = rec
+            if key ~= nil then lastBy[key] = rec end
+        end
+    end
+    return kept
+end
+
+-- The rows a death told twice wrote twice on a stranger: the witnesses'
+-- (Features/Witnesses/) and the player who killed the user (Features/
+-- WorldPvP/).
+local DEATH_ROWS = { watched_death = true, tried_to_help = true, pvp_death = true }
+
+-- Every death told twice kept once: on each route (its list of deaths and
+-- their count, a player's kill as a lost fight), in each session's log and
+-- count, and in the rows above.
+STEPS.diary[5] = function(diary)
+    local function At(rec) return rec.t end
+    for _, j in pairs(type(diary.journey) == "table" and diary.journey or {}) do
+        if type(j) == "table" and type(j.deaths) == "table" then
+            j.deaths = Deduped(j.deaths, function() return "death" end, At, function(d)
+                if type(d.t) == "number" then Uncount(j, d.t) end
+            end)
+        end
+        if type(j) == "table" and type(j.marks) == "table" then
+            j.marks = Deduped(j.marks, function(mark)
+                if mark.kind == "fight" and mark.outcome == "lost" then return mark.guid or "" end
+            end, At)
+        end
+    end
+
+    for _, session in pairs(type(diary.sessions) == "table" and diary.sessions or {}) do
+        if type(session) == "table" and type(session.deathLog) == "table" then
+            local deaths = type(session.deaths) == "table" and session.deaths or {}
+            session.deathLog = Deduped(session.deathLog, function(d) return d.guid end,
+                function(d) return d.time end, function(d)
+                    local n = deaths[d.guid]
+                    if type(n) == "number" and n > 1 then deaths[d.guid] = n - 1 end
+                end)
+        end
+    end
+
+    local interactions = type(diary.interactions) == "table" and diary.interactions or {}
+    for guid, rows in pairs(interactions) do
+        if type(rows) == "table" then
+            interactions[guid] = Deduped(rows, function(row)
+                if DEATH_ROWS[row.type] then return row.type .. ";" .. tostring(row.me) end
+            end, function(row) return row.time end)
+        end
+    end
+end
 
 -- Oldest first, bumping `schema` after each step, so a table that skipped
 -- versions still walks every one. A table with no number is new, and so

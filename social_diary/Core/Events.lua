@@ -343,6 +343,44 @@ function ns.Duelling(guid, grace)
     return true
 end
 
+--------------------------------------------------------------------------
+-- One death a life
+--------------------------------------------------------------------------
+
+-- The client can tell one death twice (PLAYER_DEAD again before the user
+-- is alive), and every listener would keep it twice: the route's count,
+-- the deaths' list and the session's, the witnesses' rows. Registered
+-- here, in Core, ahead of every other PLAYER_DEAD handler, and never
+-- taken off, so it holds the list's first slot and has its answer ready
+-- before theirs run. A repeat has to come within REPEAT seconds, so a
+-- revive the client never told of drops no later death.
+local REPEAT = 10
+local dead, diedAt, again = false, nil, false
+
+ns.On("PLAYER_DEAD", function()
+    local now = ns.Now()
+    again = dead and diedAt ~= nil and now - diedAt < REPEAT
+    if not again then diedAt = now end
+    dead = true
+end)
+
+-- Releasing the spirit fires PLAYER_ALIVE too: a ghost is still dead.
+ns.On("PLAYER_ALIVE", function()
+    if ns.Plain(UnitIsDeadOrGhost("player")) ~= true then dead = false end
+end)
+
+ns.On("PLAYER_UNGHOST", function() dead = false end)
+
+ns.On("PLAYER_ENTERING_WORLD", function()
+    dead = ns.Plain(UnitIsDeadOrGhost("player")) == true
+end)
+
+-- Inside a PLAYER_DEAD handler: whether this death was told already, the
+-- user dead since, and so is no new one.
+function ns.DiedAgain()
+    return again
+end
+
 ns.On("ADDON_LOADED", function(_, loaded)
     if loaded ~= addonName then return end
     ns.InitDB()

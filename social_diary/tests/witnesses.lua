@@ -70,6 +70,7 @@ local function Fresh()
     mock.SetUnit("player", SELF)
     mock.inCombat = false
     mock.fire("PLAYER_REGEN_ENABLED")
+    mock.fire("PLAYER_ALIVE")
 end
 
 local function Line(guid, kind)

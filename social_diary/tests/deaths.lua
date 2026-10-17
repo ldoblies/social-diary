@@ -86,6 +86,7 @@ Check(s, "grouping with a diary entry did not open a session")
 mock.subZone = "Red Cloud Mesa"
 mock.SetUnit("target", Mob(THUNDERHOOF, "Plainstrider"))
 mock.inCombat = true
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 
 Eq(s.deaths[SELF.guid], 1, "the death was not counted")
@@ -121,6 +122,7 @@ Section("the recap's own name, with no target")
 mock.SetUnit("target", nil)
 mock.now = mock.now + 60
 recaps.latest = Pack(SELF.guid, mock.now)
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 death = s.deathLog[2]
 Eq(death.killer, nil, "a guess with nothing targeted")
@@ -134,6 +136,7 @@ Section("fallbacks: a stale, secret or missing recap")
 -- A recap from an earlier death is not this one's.
 mock.SetUnit("target", Mob(LONGHOOF, "Plainstrider"))
 mock.now = mock.now + 300
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 death = s.deathLog[3]
 for _ = 1, 12 do mock.RunTimers() end
@@ -144,6 +147,7 @@ Eq(DeathLines(GUID)[3], "You died, probably to Plainstrider near Red Cloud Mesa"
 -- A secret recap is skipped without touching it.
 mock.now = mock.now + 300
 recaps.latest = mock.secret(Pack(SELF.guid, mock.now))
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 death = s.deathLog[4]
 for _ = 1, 12 do mock.RunTimers() end
@@ -155,6 +159,7 @@ _G.C_DeathRecap = nil
 mock.SetUnit("target", nil)
 mock.subZone = ""
 mock.now = mock.now + 300
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 death = s.deathLog[5]
 for _ = 1, 12 do mock.RunTimers() end
@@ -166,6 +171,7 @@ _G.C_DeathRecap = api
 mock.SetUnit("target", { guid = "Creature-0-4615-1-72-3078-000046C000", name = { "Kodo Calf" },
     isPlayer = false, hostile = false })
 mock.now = mock.now + 300
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 Eq(s.deathLog[6].killer, nil, "a friendly target taken for the killer")
 for _ = 1, 12 do mock.RunTimers() end
@@ -249,6 +255,7 @@ mock.creatureDisplays[2955] = 1961
 mock.SetUnit("target", { guid = THUNDERHOOF, name = { "Plainstrider" }, isPlayer = false, hostile = true })
 mock.now = mock.now + 300
 local before = #route
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 Eq(#route, before + 1, "the death did not go on the route")
 local d = Latest()
@@ -268,6 +275,7 @@ mock.SetUnit("target", nil)
 mock.creatureDisplays[6] = 127670
 mock.now = mock.now + 300
 recaps.latest = { Hit(KOBOLD, "Kobold Vermin", SELF.guid, mock.now, { spellName = "Rend" }) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 d = Latest()
 Eq(d.npcID, nil, "a killer with nothing targeted")
@@ -283,6 +291,7 @@ Eq(d.display, 127670, "the creature's display was not looked up")
 mock.now = mock.now + 300
 recaps.latest = { Hit("Creature-0-4615-1-72-99-0000AAAA02", "Mystery", SELF.guid, mock.now) }
 local looked = mock.models or 0
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 for _ = 1, 10 do mock.RunTimers() end
 d = Latest()
@@ -293,6 +302,7 @@ Eq(mock.models - looked, 1, "the creature was set on the model more than once")
 -- The world killed them: no creature, the kind of death kept.
 mock.now = mock.now + 300
 recaps.latest = { Hit(nil, nil, SELF.guid, mock.now, { environmentalType = "Falling" }) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 mock.RunTimers()
 d = Latest()
@@ -304,6 +314,7 @@ Eq(d.npcID, nil, "a creature for a fall")
 mock.SetUnit("target", { guid = KOBOLD, name = { "Kobold Vermin" }, isPlayer = false, hostile = true })
 mock.now = mock.now + 300
 recaps.latest = { Hit("Player-4618-00000BAD", "Romulus Lupa", SELF.guid, mock.now, { spellName = "Wrath" }) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 Eq(Latest().npcID, 6, "the guess")
 mock.RunTimers()
@@ -317,6 +328,7 @@ mock.SetUnit("target", nil)
 ns.db.settings.keepRoute = false
 before = #route
 mock.now = mock.now + 300
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 for _ = 1, 12 do mock.RunTimers() end
 Eq(#route, before, "a death kept with the route off")
@@ -334,6 +346,7 @@ mock.SetUnit("nameplate4", { guid = KOBOLD, name = { "Kobold Vermin" }, isPlayer
     classification = "normal" })
 mock.now = mock.now + 300
 recaps.latest = { Hit(HOGGER, "Hogger", SELF.guid, mock.now) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 mock.SetUnit("nameplate3", nil)
 mock.RunTimers()
@@ -343,6 +356,7 @@ Eq(d.rank, "elite", "the elite's rank was not kept")
 
 mock.now = mock.now + 300
 recaps.latest = { Hit(KOBOLD, "Kobold Vermin", SELF.guid, mock.now) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 mock.RunTimers()
 Eq(Latest().npcID, 6, "the common creature")
@@ -365,6 +379,7 @@ mock.SetUnit("target", nil)
 ns.CreatureNames.Note(46, "Murloc Forager", mock.now)
 mock.now = mock.now + 300
 recaps.latest = { Hit(MURLOC, "Murloc Forager Olwynne", SELF.guid, mock.now) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 mock.RunTimers()
 Eq(Latest().npcID, 46, "setup: the recap's creature")
@@ -373,6 +388,7 @@ Eq(Latest().name, "Murloc Forager", "the recap's surname kept, the creature's na
 -- Kept before its name was known, then read off a nameplate: put right.
 mock.now = mock.now + 300
 recaps.latest = { Hit(SPIDER, "Forest Spider Grimm", SELF.guid, mock.now) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 mock.RunTimers()
 local spider = Latest()
@@ -384,6 +400,7 @@ Eq(spider.name, "Forest Spider", "a death kept with a surname was not put right 
 -- guessed off it.
 mock.now = mock.now + 300
 recaps.latest = { Hit(BEAR, "Young Forest Bear", SELF.guid, mock.now) }
+mock.fire("PLAYER_ALIVE")
 mock.fire("PLAYER_DEAD")
 mock.RunTimers()
 Eq(Latest().name, "Young Forest Bear", "a name cut with none known")
@@ -488,3 +505,49 @@ ns.CreatureNames.Note(2000, "Gnoll Brute", mock.now)
 Eq(j.names[2000], nil, "a name kept with the route off")
 ns.db.settings.keepRoute = true
 
+
+--------------------------------------------------------------------------
+Section("one death, told twice")
+
+-- The client can fire PLAYER_DEAD again for a death it has told: it counts
+-- once, on the route, on the route's list of deaths and in the session. A
+-- death after coming back to life is a new one.
+local function RouteDeaths()
+    local n = j.open and j.open.loose and j.open.loose.deaths or 0
+    for _, seg in ipairs(J.All(j)) do n = n + (seg.act and seg.act.deaths or 0) end
+    return n
+end
+
+mock.fire("PLAYER_ALIVE")
+mock.fire("GROUP_ROSTER_UPDATE")
+s = ns.Sessions.Current()
+Check(s, "setup: no session open")
+local counted, listed, logged = RouteDeaths(), #j.deaths, s.deaths[SELF.guid] or 0
+mock.now = mock.now + 300
+mock.fire("PLAYER_DEAD")
+mock.fire("PLAYER_DEAD")
+Eq(RouteDeaths(), counted + 1, "a death told twice counted twice on the route")
+Eq(#j.deaths, listed + 1, "a death told twice listed twice")
+Eq(s.deaths[SELF.guid], logged + 1, "a death told twice counted twice in the session")
+
+-- Released and still a ghost: no new life yet.
+mock.ghost = true
+mock.fire("PLAYER_ALIVE")
+mock.fire("PLAYER_DEAD")
+Eq(#j.deaths, listed + 1, "a ghost's PLAYER_DEAD kept as a death")
+mock.ghost = false
+mock.fire("PLAYER_UNGHOST")
+
+mock.now = mock.now + 300
+mock.fire("PLAYER_DEAD")
+Eq(RouteDeaths(), counted + 2, "a death after coming back to life not counted on the route")
+Eq(#j.deaths, listed + 2, "a death after coming back to life not listed")
+Eq(s.deaths[SELF.guid], logged + 2, "a death after coming back to life not counted in the session")
+
+-- A revive the client never told of: a death a while later is still new.
+mock.now = mock.now + 300
+mock.fire("PLAYER_DEAD")
+Eq(#j.deaths, listed + 3, "a death after an untold revive was dropped")
+mock.fire("PLAYER_UNGHOST")
+table.remove(j.deaths)
+for _ = 1, 12 do mock.RunTimers() end

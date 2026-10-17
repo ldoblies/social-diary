@@ -449,7 +449,9 @@ ns.On("NAME_PLATE_UNIT_ADDED", function(_, unit)
     if f then Read(f, unit) end
 end)
 
-ns.On("PLAYER_DEAD", Died)
+ns.On("PLAYER_DEAD", function()
+    if not ns.DiedAgain() then Died() end
+end)
 
 ns.On("SD_FIGHT_SURVIVED", function(_, started, ended, taken, max, foe)
     Witnesses.Survived(started, ended, taken, max, foe)

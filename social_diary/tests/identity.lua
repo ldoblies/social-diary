@@ -17,7 +17,7 @@ mock.fire("ADDON_LOADED", "some_other_addon")
 Check(ns.db == nil, "DB initialised for the wrong addon")
 
 mock.fire("ADDON_LOADED", "social_diary")
-Check(ns.db and ns.db.schema == 4, "DB not initialised")
+Check(ns.db and ns.db.schema == 5, "DB not initialised")
 Eq(ns.dbRestored, false, "an empty first load reported as restored")
 
 -- The whole point of the flag: a load that did get its data back says so, so
@@ -36,7 +36,7 @@ Section("version numbers, for migrations")
 -- Each file and the diary in use carry their own number.
 Eq(_G.SocialDiaryDB.schema, 1, "the account file has no version")
 Eq(_G.SocialDiaryCharDB.schema, 1, "the per-character file has no version")
-Eq(_G.SocialDiaryCharDB.data.schema, 4, "the diary has no version")
+Eq(_G.SocialDiaryCharDB.data.schema, 5, "the diary has no version")
 
 -- The steps: oldest first, each once, on the table as saved.
 local Migrate, ran = ns._test.Migrate, {}
@@ -55,6 +55,53 @@ local new = {}
 Migrate(new, 4, steps)
 Eq(#ran, 2, "a new table was migrated")
 Eq(new.schema, 4, "a new table is not current")
+
+-- Diary schema 5: a death the client told twice (PLAYER_DEAD) was kept
+-- twice, 0 to 2 s apart, everywhere a death goes. Kept once: the second is
+-- dropped and its count taken back from where it was counted, on a saved
+-- stop, on what is open, in a session. Two deaths 3 s apart are two.
+local J = ns.Journey
+local function Stop(from, act)
+    return J.Pack({ kind = "stop", from = from, to = from + 600, mapID = 1412, levelFrom = 10, levelTo = 10,
+        x = 0.5, y = 0.5, r = 20, seconds = 600, act = act })
+end
+local route = {
+    segments = { Stop(1000, { deaths = 2, combat = 30 }), Stop(2000, { deaths = 2 }) },
+    open = { c = { since = 3000, act = { deaths = 2 } } },
+    deaths = { { t = 1100, npcID = 6 }, { t = 1101, npcID = 6 }, { t = 2100 }, { t = 2103 },
+        { t = 3001 }, { t = 3002 } },
+    marks = { { t = 1100, kind = "fight", outcome = "lost" }, { t = 1101, kind = "fight", outcome = "lost" },
+        { t = 1101, kind = "fight", outcome = "won" } },
+}
+local session = { deaths = { [SELF.guid] = 2, [STRANGER.guid] = 1 },
+    deathLog = { { guid = SELF.guid, time = 1100 }, { guid = SELF.guid, time = 1101 },
+        { guid = STRANGER.guid, time = 1101 } } }
+local rows = { { type = "watched_death", time = 1100, me = SELF.guid }, { type = "watched_death", time = 1101, me = SELF.guid },
+    { type = "pvp_death", time = 1100, me = SELF.guid }, { type = "pvp_death", time = 1100, me = SELF.guid },
+    { type = "whisper", time = 1100, me = SELF.guid }, { type = "whisper", time = 1100, me = SELF.guid } }
+local saved = _G.SocialDiaryCharDB
+_G.SocialDiaryCharDB = { schema = 1, data = { schema = 4, journey = { [SELF.guid] = route },
+    sessions = { [1] = session }, interactions = { [STRANGER.guid] = rows } } }
+ns.InitDB()
+Eq(ns.db.schema, 5, "the diary was not brought to schema 5")
+route = ns.db.journey[SELF.guid]
+local times = {}
+for i, d in ipairs(route.deaths) do times[i] = d.t end
+Eq(table.concat(times, ","), "1100,2100,2103,3001", "deaths told twice still listed twice")
+Eq(J.Unpack(route.segments[1]).act.deaths, 1, "a saved stop still counts a death told twice")
+Eq(J.Unpack(route.segments[1]).act.combat, 30, "the stop's fighting went with the death")
+Eq(J.Unpack(route.segments[2]).act.deaths, 2, "two deaths 3 s apart counted as one")
+Eq(route.open.c.act.deaths, 1, "the open stop still counts a death told twice")
+Eq(#route.marks, 2, "a player's kill told twice still two lost fights")
+session = ns.db.sessions[1]
+Eq(#session.deathLog, 2, "a session's death told twice still logged twice")
+Eq(session.deaths[SELF.guid], 1, "a session still counts a death told twice")
+Eq(session.deaths[STRANGER.guid], 1, "someone else's death in the same second was dropped")
+Eq(T.Rows(STRANGER.guid, "watched_death"), 1, "a witness's row for a death told twice kept twice")
+Eq(T.Rows(STRANGER.guid, "pvp_death"), 1, "a player's kill told twice kept twice")
+Eq(T.Rows(STRANGER.guid, "whisper"), 2, "rows that are not a death's were deduped")
+_G.SocialDiaryCharDB = saved
+ns.InitDB()
 
 --------------------------------------------------------------------------
 Section("one diary per character, or one shared (DAT-1)")

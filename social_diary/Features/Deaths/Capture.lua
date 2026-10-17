@@ -417,7 +417,7 @@ local function Died(guid)
 end
 
 ns.On("PLAYER_DEAD", function()
-    Died(ns.ownGUID)
+    if not ns.DiedAgain() then Died(ns.ownGUID) end
 end)
 
 -- UNIT_DIED carries a readable GUID for group members (feasibility report
