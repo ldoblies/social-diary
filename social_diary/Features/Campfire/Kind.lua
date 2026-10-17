@@ -1,6 +1,6 @@
 -- Campfires (WoW Forever's camps): a minute sat by one, and who sat there
 -- too. The diary's first feature in a folder of its own, and the pattern
--- for the rest (.claude/skills/new-feature/folder.md):
+-- for the rest:
 --
 --   Kind.lua     what a campfire is to the diary: the People row, its
 --                icon, the route's list and the recap's moment

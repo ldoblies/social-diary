@@ -1,5 +1,5 @@
 -- Close calls (JRN-25): out of a fight alive, and only just. A feature in
--- a folder of its own (.claude/skills/new-feature/folder.md):
+-- a folder of its own:
 --
 --   Kind.lua     what a close call is to the route: its list, the judging
 --                of a fight by the damage it did, and the recap's moment

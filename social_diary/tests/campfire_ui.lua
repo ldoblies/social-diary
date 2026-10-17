@@ -142,8 +142,7 @@ ns.UI.SetJournalView("people")
 ns.UI.SetJournalView("journey")
 local page = ns.UI.JourneyPage()
 
--- Captions wrap roughly as the client's do (as the plates' render tool
--- has them, .claude/skills/plates/tools/plate_dump.lua): the body 6.6 px a
+-- Captions wrap roughly as the client's do: the body 6.6 px a
 -- letter and 15 px a line, the hand 7 and 18; the body `wide` times that.
 local wide = 1
 local function Patch(fs, per, line)

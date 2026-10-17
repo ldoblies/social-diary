@@ -25,24 +25,17 @@ luajit tests/run.lua people.lua # only the files you name
 ```
 
 A new test file only runs once it is listed in `FILES` in `tests/run.lua`.
-CI runs the suite on every push to `main` and on every pull request
-(`.github/workflows/tests.yml`).
 
 The mock does not do layout. For anything a player sees, try it in the game
 client as well.
 
 ## Finding your way round
 
-[AGENTS.md](AGENTS.md) is the map of the code: what lives in `Core/`,
+[CLAUDE.md](../CLAUDE.md) is the map of the code: what lives in `Core/`,
 `Capture/`, `UI/`, `Features/`, `Dev/` and `tests/`, and the load order in
 `social_diary.toc`. It also holds the rules for AI-assisted work, so it is
 worth reading whether you use an assistant or not.
 
-- `.claude/skills/` holds the copywriter, plates, release and new-feature
-  skills. To add a detection, follow `.claude/skills/new-feature/`: the
-  pipeline in `SKILL.md`, the folder and its registries in `folder.md`.
-- `.claude/rules/` holds the project rules, such as how to write the changelog
-  and whether a new setting is per character or per account.
 - `.impeccable.md` describes the look and feel of the book.
 - `Dev/` holds in-game debug tools (`/sd art`, `/sd journey`, `/sd testdata`).
   They load from the repository but are fenced out of releases.
@@ -55,8 +48,7 @@ in the repository. You can ignore them.
 
 ## Text a player reads
 
-Every string a player reads follows the house voice in
-`.claude/skills/copywriter/SKILL.md`. In short:
+Every string a player reads follows the house voice:
 
 - British English, sentence case, whole sentences.
 - The diary speaks to _you_ and calls itself _the diary_, never _I_.
@@ -79,16 +71,12 @@ The journal is an open book on parchment, not a window. In brief:
 - Light theme: dark ink on warm parchment. Shared colours, fonts and sizes
   live in `UI/Style/`; use them rather than new values.
 - Lapis blue is for ornament only, since blue on the page also reads Alliance.
-- New settings are per character unless there is a reason otherwise
-  (`.claude/rules/settings.md`).
-- Work on _Your Diary_'s map plates follows `.claude/skills/plates/`.
-- Where UI code goes, how pages, settings sections, marks and cards plug
-  in, and how to prove a refactor changed nothing: `.claude/rules/ui.md`.
+- New settings are per character unless there is a reason otherwise.
 
 ## Changelog
 
 Anything a player would notice gets one line in `CHANGELOG.md`, under
-`## [Unreleased]`. Follow `.claude/rules/changelog.md`: about ten words, what
+`## [Unreleased]`: about ten words, what
 changed and not how, under _Shiny new Things_, _Changes_ or _Fixes_.
 
 ## Images
@@ -102,7 +90,7 @@ screenshots to your pull request or issue.
       are in `FILES` in `tests/run.lua`.
 - [ ] Tried in the game client. Say what you did, and attach a screenshot for
       UI changes.
-- [ ] Player-facing text follows the copywriter skill.
+- [ ] Player-facing text follows the house voice.
 - [ ] `CHANGELOG.md` has a line under `## [Unreleased]` for anything a player
       would notice.
 - [ ] No images committed.
@@ -110,10 +98,7 @@ screenshots to your pull request or issue.
 ## Releases
 
 Releases are made by the maintainer. The version in `## Version` in
-`social_diary.toc` and the changelog are raised together, then a tag
-`v<version>` is pushed. `.github/workflows/release.yml` runs the tests,
-packages the addon with the BigWigs packager and publishes a GitHub release.
-`.claude/skills/release-version/` describes the steps.
+`social_diary.toc` and the changelog are raised together.
 
 ## Licence
 

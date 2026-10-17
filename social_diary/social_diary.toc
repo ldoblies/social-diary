@@ -137,8 +137,7 @@ UI/Blizzard/Bindings.lua
 # Features: each detection in a folder of its own (Features/<Name>/), which
 # registers itself into the registries of Core/ and UI/ above, so it loads
 # after them: Kind, Data (its static tables), Text, Mark, Slip or Card,
-# then Capture. Its Dev.lua goes in the block at the foot
-# (.claude/skills/new-feature/folder.md). Level-ups,
+# then Capture. Its Dev.lua goes in the block at the foot. Level-ups,
 # Trade, then Chat come first: their Dev.lua write at the same points of
 # Tester's script, a session's level-ups before its trade, a trade before
 # the whispers about it, and Tester's first session's whispers before the

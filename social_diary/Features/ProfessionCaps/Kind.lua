@@ -1,6 +1,5 @@
 -- Profession caps (JRN-29): a profession's skill reaching the most its
--- training allows, and where. A feature in a folder of its own
--- (.claude/skills/new-feature/folder.md):
+-- training allows, and where. A feature in a folder of its own:
 --
 --   Kind.lua     what a cap is to the diary: the route's list and the
 --                recap's moment

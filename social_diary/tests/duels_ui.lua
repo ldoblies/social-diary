@@ -319,8 +319,7 @@ ns.UI.SetJournalView("people")
 ns.UI.SetJournalView("journey")
 page = ns.UI.JourneyPage()
 
--- Captions wrap roughly as the client's do (as the plates' render tool
--- has them, .claude/skills/plates/tools/plate_dump.lua).
+-- Captions wrap roughly as the client's do.
 local function Patch(fs, per, line)
     if fs.patched then return end
     fs.patched = true

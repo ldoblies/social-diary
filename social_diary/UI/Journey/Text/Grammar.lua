@@ -174,7 +174,7 @@ end
 
 -- What a kind's own words (its card's, its mark's tooltip, its caption
 -- words) are written with, on Text, so its section can move to its
--- feature's file (Features/<Name>/, .claude/skills/new-feature/folder.md) as it
+-- feature's file (Features/<Name>/) as it
 -- is, its helpers taken from here (`local When, Capital = Text.When,
 -- Text.Capital`) instead of from these files' locals:
 --   Glue(text)            its spaces no-break (SPACE), so it never wraps

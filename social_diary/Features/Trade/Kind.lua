@@ -1,6 +1,5 @@
 -- Trade (INT-1): a trade the client confirmed, a row on the person traded
--- with, saying what changed hands. A feature in a folder of its own
--- (.claude/skills/new-feature/folder.md), and a People row
+-- with, saying what changed hands. A feature in a folder of its own, and a People row
 -- and nothing else, as Chat is: no route list, no moment on the plates, no
 -- mark, no margin note, no caption words.
 --

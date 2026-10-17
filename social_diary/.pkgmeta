@@ -5,13 +5,8 @@ manual-changelog:
   markup-type: markdown
 
 ignore:
-  - .claude
-  - .github
   - .impeccable.md
-  - AGENTS.md
   - CONTRIBUTING.md
-  - DESCRIPTION.md
   - Dev
   - Features/*/Dev.lua
   - tests
-  - Questie-v12.0.4+v1.0.5

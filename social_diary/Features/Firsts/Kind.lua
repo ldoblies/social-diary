@@ -1,6 +1,6 @@
 -- Firsts found (JRN-24): the first bag, shoulders, green, blue and epic the
 -- character found, where and how each came. A feature in a folder of its
--- own (.claude/skills/new-feature/folder.md):
+-- own:
 --
 --   Kind.lua     what a first is to the diary: the firsts kept on the
 --                route (j.firsts, keyed by kind), their readers, and the

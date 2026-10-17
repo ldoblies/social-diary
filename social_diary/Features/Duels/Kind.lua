@@ -1,7 +1,6 @@
 -- Duels: a duel with another player, won or lost, and back-to-back duels
 -- with the same one told together ("lost 3 duels and won 2"; the user, 15
--- Oct). A feature in a folder of its own
--- (.claude/skills/new-feature/folder.md):
+-- Oct). A feature in a folder of its own:
 --
 --   Kind.lua     what a duel is to the diary: its row kind, its words and
 --                icon on the timeline, the route's list of duels, and the

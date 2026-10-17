@@ -1,6 +1,6 @@
 -- Quest chain finales (JRN-28): turning in the last quest of a long chain
 -- the user chose, and where the chain began. A feature in a folder of its
--- own (.claude/skills/new-feature/folder.md):
+-- own:
 --
 --   Kind.lua     what a finale is to the diary: the route's list, the
 --                chains' starts and the recap's moment

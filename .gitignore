@@ -5,8 +5,5 @@ __pycache__/
 # Images bloat history and agents write them all the time (renders, mockups).
 *.png
 
-# The design trail (PRD, plans, research, mockups) stays local. Only the
-# agent tooling is public: skills and project rules.
-.claude/*
-!.claude/skills/
-!.claude/rules/
+# The design trail (PRD, plans, research, mockups) stays local.
+.claude/

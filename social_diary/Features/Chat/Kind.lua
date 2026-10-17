@@ -1,6 +1,6 @@
 -- Chat (INT-1, INT-3, INT-4): whispers both ways, /say, /yell and party
 -- lines, each a row on the person who said it. A feature in a folder of
--- its own (.claude/skills/new-feature/folder.md), and the
+-- its own, and the
 -- first that is a People row and nothing else: no route list, no moment on
 -- the plates, no mark, no margin note, no caption words.
 --

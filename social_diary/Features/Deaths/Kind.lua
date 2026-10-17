@@ -1,7 +1,6 @@
 -- Deaths: what killed you, kept on your route and drawn as a card beside
 -- the plate it happened on (JRN-21), and the deaths in a together session
--- (SES-4). A feature in a folder of its own
--- (.claude/skills/new-feature/folder.md):
+-- (SES-4). A feature in a folder of its own:
 --
 --   Kind.lua     what a death is to the route: its list of the user's
 --                deaths with their killers, and the writing of it

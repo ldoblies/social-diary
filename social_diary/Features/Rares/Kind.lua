@@ -1,7 +1,7 @@
 -- Rare kills (SES-4): a rare, rare elite or world boss killed by the user
 -- or their group during a together session, counted for every participant
 -- grouped right then ("killed Humar the Pridelord" on their timeline). A
--- feature in a folder of its own (.claude/skills/new-feature/folder.md),
+-- feature in a folder of its own,
 -- and a detection and nothing else: no row kind, no route list, no moment
 -- on the plates, no mark, no margin note, no caption words.
 --

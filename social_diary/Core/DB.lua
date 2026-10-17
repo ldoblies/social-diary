@@ -9,7 +9,6 @@
 --                      diary while the diary is not shared.
 --
 -- The settings themselves are per character, all but ACCOUNT_SETTINGS below.
--- .claude/rules/settings.md says how to choose for a new one.
 --
 -- Everything else reads ns.db, which is the diary loaded this login with
 -- `settings` laid over it, so no other file needs to know which file a value

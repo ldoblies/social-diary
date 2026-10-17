@@ -381,7 +381,7 @@ end
 -- For the page lines, which lay episodes and visits out, and a note's
 -- words (UI/Journal/Timeline.lua).
 -- And a row's words shared by its kinds, for a feature's file
--- (Features/<Name>/, .claude/skills/new-feature/folder.md) to tell its own rows
+-- (Features/<Name>/) to tell its own rows
 -- (Core/Rows.lua's `text`) as these do: Items(list) "2x [Linen Cloth],
 -- [Copper Ore]"; Quote(text, fallback) 'Said: "hello"', or the fallback
 -- alone; Place(row) " in Hillsbrad Foothills", or ""; Foe(row) the

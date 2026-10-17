@@ -192,8 +192,7 @@ end
 -- What is the diary's own is written here (PARAGRAPHS, numbered by hand).
 -- Every other kind with a paragraph of its own registers it
 -- (Text.RegisterLines), so a feature's file (Features/<Name>/, loaded
--- after UI/) adds to every entry's prose without this file knowing of it
--- (.claude/skills/new-feature/folder.md). Today's: the
+-- after UI/) adds to every entry's prose without this file knowing of it. Today's: the
 -- diary's opening 10, time 20, people 30; a kind registered from
 -- Features/<Name>/ says its number there. Leave gaps. At
 -- equal numbers the diary's paragraph goes first, then the kinds in the

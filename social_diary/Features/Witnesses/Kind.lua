@@ -1,7 +1,6 @@
 -- Witnesses: strangers around the user's fights, who stood by while the
 -- user died, who waded in, and who pulled them through a fight they only
--- just survived (14 Oct). A feature in a folder of its own
--- (.claude/skills/new-feature/folder.md):
+-- just survived (14 Oct). A feature in a folder of its own:
 --
 --   Kind.lua     what a witness is to the diary: its three row kinds,
 --                their words and icons on the timeline, and the finding of

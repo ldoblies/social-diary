@@ -1,6 +1,6 @@
 -- Hunts (JRN-26 bad luck, EXT-3 good luck): how many kills a quest's
 -- drops took, and whether that was bad luck or good. A feature in a folder
--- of its own (.claude/skills/new-feature/folder.md):
+-- of its own:
 --
 --   Kind.lua       what a hunt is to the route: the hunts under way and
 --                  finished, the drop rates' reckoning, bad and good luck,
