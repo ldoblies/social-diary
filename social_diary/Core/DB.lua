@@ -257,7 +257,7 @@ end
 -- versions still walks every one. A table with no number is new, and so
 -- current already.
 local function Migrate(t, current, steps)
-    t.schema = t.schema or current
+    t.schema = tonumber(t.schema) or current
     for version = t.schema + 1, current do
         if steps[version] then steps[version](t) end
         t.schema = version

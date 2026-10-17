@@ -55,6 +55,10 @@ local new = {}
 Migrate(new, 4, steps)
 Eq(#ran, 2, "a new table was migrated")
 Eq(new.schema, 4, "a new table is not current")
+local odd = { schema = "x" }
+Migrate(odd, 4, steps)
+Eq(odd.schema, 4, "a schema that is not a number broke the migration")
+Eq(#ran, 2, "a schema that is not a number ran the steps")
 
 -- Diary schema 5: a death the client told twice (PLAYER_DEAD) was kept
 -- twice, 0 to 2 s apart, everywhere a death goes. Kept once: the second is

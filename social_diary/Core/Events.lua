@@ -246,7 +246,15 @@ function ns.Every(seconds, fn)
         C_Timer.NewTicker(seconds, function()
             for i = 1, #jobs do
                 local job = jobs[i]
-                if job then job.fn() end
+                if job then
+                    local handle = geterrorhandler and geterrorhandler()
+                    if handle then
+                        local ok, err = pcall(job.fn)
+                        if not ok then handle(err) end
+                    else
+                        job.fn()
+                    end
+                end
             end
         end)
     end
@@ -390,6 +398,10 @@ ns.On("PLAYER_ENTERING_WORLD", function() ns.FillBegunZone() end)
 ns.On("ZONE_CHANGED_NEW_AREA", function() ns.FillBegunZone() end)
 
 ns.On("PLAYER_LOGIN", function()
+    if not ns.db then
+        ns.Print("could not read your saved diary, so nothing is written this session. Please report it.")
+        return
+    end
     ns.TouchOwnCharacter()
     ns.Interactions.Prune()
     ns.Diary.FillSeen()

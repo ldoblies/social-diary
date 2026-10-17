@@ -116,6 +116,13 @@ Eq(after, 1, "the next handler did not run after an error")
 Check(tostring(caught[1]):find("boom") ~= nil, "the error handler got something else")
 ns.Off("SD_TEST_GUARD", Boom)
 ns.Off("SD_TEST_GUARD", Next)
+
+-- Nor can one job silence the others on a shared beat.
+ns.Every(777, Boom)
+ns.Every(777, Next)
+mock.tickers[#mock.tickers].fn()
+Eq(#caught, 2, "a failing job's error did not reach the error handler")
+Eq(after, 2, "the next job on the beat did not run after an error")
 _G.geterrorhandler = nil
 
 --------------------------------------------------------------------------
