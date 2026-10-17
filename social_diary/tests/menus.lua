@@ -72,7 +72,17 @@ Eq(#mock.OpenMenu("MENU_UNIT_PLAYER", { name = mock.secret("Bram") }), 0,
 mock.SetUnit("target", { guid = "Creature-0-4620-1-6-3098-1", name = { "Kobold Vermin" }, isPlayer = false })
 Eq(#mock.OpenMenu("MENU_UNIT_TARGET", { unit = "target" }), 0, "an NPC was offered an entry")
 Eq(#mock.OpenMenu("MENU_UNIT_PLAYER", { name = "Nobody" }), 0, "an unidentified character was offered an entry")
+Eq(#mock.OpenMenu("MENU_UNIT_PLAYER", { guid = mock.secret(GUID), name = "Bram", surname = "Redfen" }), 0,
+    "the menu on a secret guid was touched (the name fallback must not rescue it)")
+local located = C_PlayerInfo.GetGUIDFromPlayerLocation
+C_PlayerInfo.GetGUIDFromPlayerLocation = function() return mock.secret(GUID) end
+Eq(#mock.OpenMenu("MENU_UNIT_PLAYER", { playerLocation = {}, name = "Bram", surname = "Redfen" }), 0,
+    "a secret playerLocation was rescued by the name fallback")
+C_PlayerInfo.GetGUIDFromPlayerLocation = located
 mock.SetUnit("target", F.STRANGER)
+mock.inInstance = true
+Eq(#mock.OpenMenu("MENU_UNIT_PARTY", { unit = "target" }), 0, "a menu inside an instance was touched")
+mock.inInstance = false
 
 --------------------------------------------------------------------------
 Section("candidates and the picker (DIA-3)")

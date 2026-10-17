@@ -50,6 +50,7 @@ local function Resolve(contextData)
     if contextData.playerLocation and C_PlayerInfo and C_PlayerInfo.GetGUIDFromPlayerLocation then
         local ok, located = pcall(C_PlayerInfo.GetGUIDFromPlayerLocation, contextData.playerLocation)
         if ok then
+            if ns.IsSecret(located) then return nil, nil, "failed" end
             guid = ns.SafeGUID(located)
             if guid then return guid, nil, "playerLocation" end
         end
@@ -81,7 +82,7 @@ end
 
 -- Whether the menu is on somebody the client keeps secret (instanced maps).
 local function Secret(contextData)
-    if ns.IsSecret(contextData.name) then return true end
+    if ns.IsSecret(contextData.name) or ns.IsSecret(contextData.guid) then return true end
     local unit = ns.Plain(contextData.unit)
     return unit ~= nil and ns.Plain(UnitExists(unit)) and ns.IsSecret(UnitGUID(unit)) or false
 end
@@ -96,11 +97,16 @@ end
 -- menu has tainted the layout (FrameUtil's GetUnscaledFrameRect errors on
 -- every right-click of the target frame in a dungeon). So a secret or
 -- unidentified unit, NPCs included, gets the menu exactly as Blizzard
--- built it.
+-- built it, and so does every menu inside an instance: a party member's
+-- identity reads plain there while the menu's geometry may not.
 local function OnMenu(tag, _, rootDescription, contextData)
     if not contextData then return end
     -- Never offer to remember yourself.
     if ns.Plain(contextData.isSelf) then return end
+    if IsInInstance and ns.Plain((IsInInstance())) ~= false then
+        ns.Debug("%s inside an instance, left alone", tag)
+        return
+    end
 
     if Secret(contextData) then
         ns.Debug("%s on a secret unit, left alone", tag)

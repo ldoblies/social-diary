@@ -8,6 +8,7 @@ All notable changes to Social Diary. Versions follow the `## Version` line in
 ### Fixes
 
 - Flight paths in _Your Diary_ now use a single Flight Master node
+- Right-click menus inside dungeons no longer break after using Social Diary
 
 ## [1.7.0]
 
