@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: Social Diary
 ## Notes: Remembers the people you meet in the open world.
-## Author: social-diary
+## Author: Snardge, social-diary (Original Social Diary)
 ## Version: 1.7.0
 ## SavedVariables: SocialDiaryDB
 ## SavedVariablesPerCharacter: SocialDiaryCharDB

@@ -5,6 +5,8 @@ groups, trades, whispers, fights, deaths, sightings, reunions — and presents t
 plus your own journey (levels, firsts, zones, sessions), as a hand-written,
 paper-styled journal. Open with `/sd`.
 
+The addon lives in `social_diary/`; paths below are relative to it.
+
 ## Target game: WoW Forever
 
 This is **WoW Forever** (currently in beta): a classic-era game (classic content,
