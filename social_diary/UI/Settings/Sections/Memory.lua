@@ -37,14 +37,21 @@ local DIARY_FILE = {
     own = "WTF\\Account\\<account>\\<realm>\\<character>\\SavedVariables\\social_diary.lua",
 }
 
--- PRV-1: said plainly, where the user will look for it.
+-- PRV-1: said plainly, where the user will look for it, and what group
+-- sync shares (Core/Sync/) once there is a code.
+local function SentText()
+    if ns.Sync.Feed.On() then
+        return " Your road, the people you met and your notes, never chat, are shared with the"
+            .. " friends who entered your group code (Sync)."
+    end
+    return " Nothing is sent to other players or to any server unless you enter a group code (Sync)."
+end
+
 local function DataText()
     if ns.diaryShared then
-        return ("The shared diary is stored only on this computer, in %s. Nothing is sent to"
-            .. " other players or to any server."):format(DIARY_FILE.shared)
+        return ("The shared diary is stored on this computer, in %s."):format(DIARY_FILE.shared) .. SentText()
     end
-    return ("This character's diary is stored only on this computer, in %s. Nothing is sent"
-        .. " to other players or to any server."):format(DIARY_FILE.own)
+    return ("This character's diary is stored on this computer, in %s."):format(DIARY_FILE.own) .. SentText()
 end
 
 -- PRV-3: "delete everything" is the diary in use, so it says whose.

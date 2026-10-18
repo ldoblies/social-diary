@@ -80,7 +80,11 @@ local Journey = ns.Journey
 -- list is registered `readNames` (Core/CreatureNames.lua's Of asks it).
 
 local LIST = "closeCalls"
-Journey.RegisterList(LIST, { cap = 300, readNames = true })
+Journey.RegisterList(LIST, { cap = 300, readNames = true,
+    feed = function(rec)
+        return "close", { lv = rec.level, pct = rec.pct, secs = rec.seconds, foe = rec.name, rank = rec.rank,
+            foeLevel = rec.foeLevel, foes = rec.foes }
+    end })
 
 -- Out of a fight alive with this much of your health or less.
 local LEFT = 0.10

@@ -2,7 +2,7 @@
 -- its pane out with. The column it is filled down (Column: Place, Heading,
 -- Hint, Checkbox, Number), the pane on the right page (Pane), and the
 -- settings written through ns.SetSetting and read again with the page
--- (Switch, Number, DependsOn, Saved). The page and its registry are in
+-- (Switch, Number, Text, DependsOn, Saved). The page and its registry are in
 -- UI/Settings/Page.lua; the sections in UI/Settings/Sections/.
 
 local addonName, ns = ...
@@ -153,6 +153,29 @@ local function Number(c, text, unit, key, min, max, after)
     return row
 end
 
+-- A line of text from the saved table, written on in ink across the
+-- column (Style.WritingLine): `hint` while it is empty, `after` once a
+-- change is written, on Enter or on letting go. Surrounding spaces go.
+local function Text(c, hint, key, after)
+    local page = SettingsUI.page
+    local line = Style.WritingLine(c.parent, c.width, FONT.strong, hint, function(text)
+        text = (text or ""):match("^%s*(.-)%s*$")
+        if text == Saved()[key] then return end
+        ns.SetSetting(key, text)
+        if after then after(text) end
+        ns.UI.Settings.Refresh()
+    end)
+    function line:Refresh()
+        if not self:HasFocus() then self:SetValue(Saved()[key]) end
+    end
+    function line:SetAvailable(available)
+        self:SetAlpha(available and 1 or 0.45)
+    end
+    c:Place(line, 22, 0, 8)
+    page.controls[#page.controls + 1] = line
+    return line
+end
+
 -- `on` is the key of the setting it depends on, or a function saying
 -- whether it is available.
 local function DependsOn(control, on)
@@ -165,6 +188,6 @@ local function DependsOn(control, on)
 end
 
 SettingsUI.Kit = {
-    Column = Column, Pane = Pane, Switch = Switch, Number = Number, DependsOn = DependsOn,
+    Column = Column, Pane = Pane, Switch = Switch, Number = Number, Text = Text, DependsOn = DependsOn,
     Saved = Saved, INDENT = INDENT,
 }

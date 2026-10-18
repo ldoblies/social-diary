@@ -36,6 +36,12 @@ Core/CreatureNames.lua
 Core/JourneyRecap.lua
 Core/Events.lua
 Core/Slash.lua
+Core/Sync/Wire.lua
+Core/Sync/Store.lua
+Core/Sync/Feed.lua
+Core/Sync/Protocol.lua
+Core/Sync/Transport.lua
+Core/Sync/Curated.lua
 
 UI/Kit/Chrome.lua
 UI/Kit/List.lua
@@ -122,6 +128,7 @@ UI/Settings/Sections/Toasts.lua
 UI/Settings/Sections/Shortcuts.lua
 UI/Settings/Sections/Sounds.lua
 UI/Settings/Sections/Integrations.lua
+UI/Settings/Sections/Sync.lua
 UI/Settings/Sections/Memory.lua
 UI/Settings/Sections/About.lua
 UI/Blizzard/Signpost.lua
@@ -232,6 +239,7 @@ Dev/Diagnostics.lua
 Dev/SightingsDebug.lua
 Dev/JourneyDebug.lua
 Dev/TestData.lua
+Dev/SyncProbe.lua
 Features/LevelUps/Dev.lua
 Features/Trade/Dev.lua
 Features/Chat/Dev.lua

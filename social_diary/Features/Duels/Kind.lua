@@ -150,6 +150,12 @@ local LIST = "duels"
 
 Journey.RegisterList(LIST, {
     cap = 300,
+    -- Fed to the group (Core/Sync/Feed.lua) as the series stands; each
+    -- duel more feeds it again.
+    feed = function(rec)
+        return "duel", { who = ns.Sync.Feed.Name(rec.guid), won = rec.won, lost = rec.lost, fled = rec.fled,
+            theyFled = rec.theyFled, ended = rec.ended }
+    end,
     prune = function(j, now)
         local cutoff = ns.Cutoff(now)
         for _, rec in ipairs(j[LIST] or {}) do

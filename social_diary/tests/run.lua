@@ -58,6 +58,9 @@ local FILES = {
     "pages",
     "paper_strip",
     "ui_layout",
+    "sync_feed",
+    "sync_protocol",
+    "sync_curated",
 }
 
 dofile(here .. "/harness.lua").Run(here, FILES, arg)

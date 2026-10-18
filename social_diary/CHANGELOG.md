@@ -8,6 +8,9 @@ All notable changes to Social Diary. Versions follow the `## Version` line in
 ### Shiny new Things
 
 - Dungeon runs are now remembered: who was there, bosses and wipes
+- Group sync: friends who enter the same group code under _Settings_, _Sync_
+  share their diaries in game (never chat), even through whoever was online
+- Curated stories can stand in for _Your Diary_'s own words, switchable
 
 ### Fixes
 

@@ -7,3 +7,6 @@ __pycache__/
 
 # The design trail (PRD, plans, research, mockups) stays local.
 .claude/
+
+# The curation tools' local paths (tools/curate/config.example.lua).
+tools/curate/config.lua

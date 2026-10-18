@@ -47,7 +47,11 @@ local Journey = ns.Journey
 -- the finale with them, `started` the chain's start as kept, if it was.
 -- The newest 200 finales are kept a character.
 
-Journey.RegisterList("finales", { cap = 200 })
+Journey.RegisterList("finales", { cap = 200,
+    feed = function(rec)
+        return "finale", { lv = rec.level, title = rec.title, n = rec.n, since = rec.started and rec.started.t,
+            from = rec.started and rec.started.mapID and ns.MapName(rec.started.mapID) }
+    end })
 
 local firstOf
 

@@ -1170,6 +1170,9 @@ Journey.Kept = Kept
 --            person's GUID kept on a record while the buffer still held
 --            them, given up once it no longer does and they are not in
 --            the diary)
+--   feed     optional function(rec, key, j) → kind, fields: a record's
+--            entry in the group sync's feed (Core/Sync/Feed.lua), or nil
+--            for none; `key` its index, or its key in a keyed table
 --   forget   optional function(j, guid): PRV-3, someone forgotten (the
 --            "journey" store, below), for each character's route: the
 --            feature lets go of `guid` wherever it kept it, `nil` being

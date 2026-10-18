@@ -87,7 +87,20 @@ local ACCOUNT_SETTINGS = {
     -- the book dismissed: the label stops asking (UI/Journal/IntroLabel.lua).
     introDone = false,
     debug = false,
+    -- Group sync (Core/Sync/): players who enter the same code share their
+    -- diaries' feeds. Empty is off, and nothing is sent.
+    groupCode = "",
+    -- What the user wrote into the diary goes to the group too.
+    shareNotes = true,
+    -- Curated stories (Core/Sync/Curated.lua) in place of the generated
+    -- words where there is one.
+    showCurated = true,
 }
+
+-- Group sync's store, account-wide so every character reads the group's
+-- diaries (Core/Sync/Store.lua): each author's stream by GUID, the hashes
+-- of what this account fed already, and peers last heard from.
+local SYNC = { authors = {}, derived = {}, peers = {} }
 
 local CHARACTER_SETTINGS = {
     storeChat = true,   -- INT-3: chat storage can be switched off
@@ -322,7 +335,7 @@ function ns.InitDB()
 
     Migrate(account, ACCOUNT_SCHEMA, STEPS.account)
     Migrate(character, CHARACTER_SCHEMA, STEPS.character)
-    ApplyDefaults(account, { settings = ACCOUNT_SETTINGS, own = {} })
+    ApplyDefaults(account, { settings = ACCOUNT_SETTINGS, own = {}, sync = SYNC })
     ApplyDefaults(character, { settings = CHARACTER_SETTINGS })
 
     -- Read once: the diary in use stays the same until the next load.
@@ -353,6 +366,11 @@ end
 -- realm, level, lastLogin }.
 function ns.OwnCharacters()
     return account.own
+end
+
+-- Group sync's saved store (SYNC above).
+function ns.SyncData()
+    return account.sync
 end
 
 -- The user's settings, for the surfaces that read or set one by name (the
@@ -402,10 +420,14 @@ end
 -- the shared one. The settings stay, because they are the user's preferences
 -- rather than data about anybody, and so does the list of the user's own
 -- characters. The table is emptied in place rather than replaced, since it
--- is the object the client writes back at logout.
+-- is the object the client writes back at logout. Group sync's store goes
+-- too: the group's copies of the user's feed are replaced at the next sync,
+-- as the user's streams begin again under a new epoch.
 function ns.WipeData()
     for key in pairs(diary) do diary[key] = nil end
     ApplyDefaults(diary, DIARY)
+    for key in pairs(account.sync) do account.sync[key] = nil end
+    ApplyDefaults(account.sync, SYNC)
     -- The saved tables are fresh already. This reaches what is kept in memory
     -- only: sighting encounters, the capture queue, waiting toasts, the
     -- picker's recent list.

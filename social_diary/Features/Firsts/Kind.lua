@@ -141,6 +141,13 @@ end
 -- and a gift stays a gift (`from` is kept). Not a list: registered for
 -- these two alone (no cap; Journey.Append and List are never asked of it).
 Journey.RegisterList("firsts", {
+    -- Fed to the group (Core/Sync/Feed.lua), keyed by kind: the item, and
+    -- who gave it while the diary knows them.
+    feed = function(rec, kind)
+        local Feed = ns.Sync.Feed
+        return "first", { what = kind, lv = rec.level, item = Feed.ItemName(rec.link), from = rec.from,
+            giver = Feed.Name(rec.guid) }
+    end,
     prune = function(j, now)
         local cutoff = ns.Cutoff(now)
         for _, rec in pairs(j.firsts or {}) do

@@ -67,4 +67,10 @@ ns.Rows.Register("trade", { proximity = true, opens = true, meeting = true, deal
         if #parts == 0 then return "Traded" end
         return "Traded: " .. table.concat(parts, "; ")
     end,
-    icon = "trade" })
+    icon = "trade",
+    -- Fed to the group (Core/Sync/Feed.lua): what changed hands, in copper.
+    feed = function(row)
+        local c, Feed = row.context or {}, ns.Sync.Feed
+        return "trade", { gave = Feed.Items(c.given), got = Feed.Items(c.received),
+            moneyGave = c.moneyGiven, moneyGot = c.moneyReceived }
+    end })

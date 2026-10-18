@@ -58,6 +58,9 @@
 --   text        function(row, guid): its line on the timeline; without one,
 --               the type itself
 --   icon        its Style.ART key on the timeline; without one, no icon
+--   feed        function(row, guid) → kind, fields: its entry in the group
+--               sync's feed (Core/Sync/Feed.lua), or nil for none; never
+--               asked of a kind that carries `chat`
 --
 -- Unknown kinds: activity "other" (chatter, "N other interactions"), not a
 -- moment, no excerpt, nothing else.
@@ -111,6 +114,8 @@ end
 -- (its Kind.lua).
 
 Rows.Register("group_join", { structural = true, meeting = true, dealt = "together", matters = true,
-    activity = "group" })
+    activity = "group",
+    -- Fed to the group sync (Core/Sync/Feed.lua): who you grouped with.
+    feed = function(row) return "group", { raid = row.context and row.context.raid or nil } end })
 -- Implied by the session's end, so never a line.
 Rows.Register("group_leave", { structural = true, hidden = true })

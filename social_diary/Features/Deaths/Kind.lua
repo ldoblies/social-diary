@@ -71,7 +71,13 @@ ns.Deaths = Deaths
 -- name is read off a unit (Core/Journey.lua's name cache).
 
 local LIST = "deaths"
-ns.Journey.RegisterList(LIST, { cap = 500, named = true })
+-- Fed to the group (Core/Sync/Feed.lua) with what killed you, as it is
+-- known: the recap may name the killer after the first feeding.
+ns.Journey.RegisterList(LIST, { cap = 500, named = true,
+    feed = function(rec)
+        return "death", { foe = rec.name, rank = rec.rank, spell = rec.spell, env = rec.environment,
+            probable = rec.probable or nil }
+    end })
 
 local KILLER = { "npcID", "name", "spell", "display", "environment", "rank", "probable" }
 

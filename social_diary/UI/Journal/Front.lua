@@ -103,7 +103,7 @@ local page
 -- What it says
 --------------------------------------------------------------------------
 
-local WHERE_TEXT = "Only here, in your WTF folder. Nothing is sent to anyone."
+local WHERE_TEXT = "Only here, in your WTF folder, unless you share it with friends (Sync)."
 
 -- PRV-7 and what it cannot see, as it is: whose position the road is, and
 -- the client's limits.

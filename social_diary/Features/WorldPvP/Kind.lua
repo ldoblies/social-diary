@@ -96,6 +96,16 @@ ns.Rows.Register(DEATH, { fight = "death", moment = Always, reason = "they kille
     end,
     icon = "death" })
 
+-- Fed to the group (Core/Sync/Feed.lua): who won, and with what.
+ns.Rows.Register(KILL, { feed = function(row)
+    local by = row.context and row.context.by
+    return "pvp", { won = true, blow = by and ns.Sync.Feed.Name(by) }
+end })
+ns.Rows.Register(DEATH, { feed = function(row)
+    local c = row.context or {}
+    return "pvp", { won = false, spell = c.spell, probable = c.probable or nil }
+end })
+
 --------------------------------------------------------------------------
 -- Writing
 --------------------------------------------------------------------------

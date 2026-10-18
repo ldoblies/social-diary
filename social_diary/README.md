@@ -53,7 +53,11 @@ QuestieDB are installed, the diary reads their data as well:
 
 ## Privacy
 
-All data stays on your computer.
+All data stays on your computer, unless you enter a group code under
+_Settings_, _Sync_. Then your road, the people you met and your notes (never
+chat) are shared, in game, with the players who entered the same code, and
+what they share is kept on your computer too. Clearing the code and choosing
+_Stop syncing and forget the group's diaries_ undoes it.
 
 ## Contributing
 

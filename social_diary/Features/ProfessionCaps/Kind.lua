@@ -39,7 +39,8 @@ ns.ProfessionCaps = ProfessionCaps
 -- the cap reached. The newest 100 are kept a character.
 
 local Journey = ns.Journey
-Journey.RegisterList("skillCaps", { cap = 100 })
+Journey.RegisterList("skillCaps", { cap = 100,
+    feed = function(rec) return "skill", { lv = rec.level, skill = rec.name, rank = rec.rank } end })
 
 -- Whether a profession went from below its cap to it between two
 -- readings, each { rank, max }. Only a rank that climbed under a max that

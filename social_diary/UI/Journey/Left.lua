@@ -135,8 +135,10 @@ local function EntryItems(recap, now, fights)
             faces = e.faces, e = e, open = open, height = open and ENTRY.title or ENTRY.closed })
         rubrics[i] = #items
         if i == page.open then
-            local opening, names = HasOpening(e), NamesOf(e)
-            for k, line in ipairs(Text.Lines(e, now, fights)) do
+            -- A curated story stands in for the prose (Core/Sync/Curated.lua).
+            local curated = ns.Sync.Curated.Lines(ns.ownGUID, e)
+            local opening, names = not curated and HasOpening(e), NamesOf(e)
+            for k, line in ipairs(curated or Text.Lines(e, now, fights)) do
                 local font = (k == 1 and opening) and FONT.faded or FONT.body
                 Add({ text = Linked(line, names), font = font, height = Measure(font, line) + ENTRY.para })
             end

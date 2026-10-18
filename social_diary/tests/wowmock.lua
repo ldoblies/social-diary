@@ -821,6 +821,26 @@ _G.RAID_CLASS_COLORS = {
 M.guild = nil
 _G.GetGuildInfo = function() return M.guild end
 
+-- Addon messages and chat channels (group sync, Core/Sync/Transport.lua):
+-- what is sent is recorded, nothing is delivered; tests hand messages in
+-- with fire("CHAT_MSG_ADDON", ...). `addonResult` is what a send returns.
+M.addonSent, M.channels, M.lockdown, M.addonResult = {}, {}, false, 0
+_G.IsInGuild = function() return M.guild ~= nil end
+_G.C_ChatInfo = {
+    RegisterAddonMessagePrefix = function() return true end,
+    SendAddonMessage = function(prefix, text, chatType, target)
+        M.addonSent[#M.addonSent + 1] = { prefix = prefix, text = text, chatType = chatType, target = target }
+        return M.addonResult
+    end,
+    InChatMessagingLockdown = function() return M.lockdown end,
+}
+_G.JoinTemporaryChannel = function(name, password) M.channels[name] = password or true end
+_G.LeaveChannelByName = function(name) M.channels[name] = nil end
+_G.GetChannelName = function(name)
+    if M.channels[name] then return 5, name end
+    return 0
+end
+
 M.inRaid, M.groupSize = false, 0
 _G.IsInRaid = function() return M.inRaid end
 _G.IsInGroup = function() return M.groupSize > 0 end

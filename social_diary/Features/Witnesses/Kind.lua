@@ -132,6 +132,17 @@ ns.Rows.Register(SAVED, { witness = "helped", moment = Always, reason = "they sa
     end,
     icon = "together" })
 
+-- Fed to the group (Core/Sync/Feed.lua): who was there, what they did,
+-- and the creature, where known.
+local ROLE = { [WATCHED] = "watched", [HELPED] = "helped", [SAVED] = "saved" }
+for kind, role in pairs(ROLE) do
+    ns.Rows.Register(kind, { feed = function(row)
+        local c = row.context or {}
+        return "witness", { role = role, foe = c.name, rank = c.rank, pct = c.pct, secs = c.watched,
+            sub = c.subZone }
+    end })
+end
+
 --------------------------------------------------------------------------
 -- A moment's witnesses
 --------------------------------------------------------------------------

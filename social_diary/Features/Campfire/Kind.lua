@@ -56,6 +56,11 @@ ns.Rows.Register("campfire", {
             .. (place and (" in " .. place) or "")
     end,
     icon = "campfire",
+    -- Fed to the group (Core/Sync/Feed.lua): who sat there too, and where.
+    feed = function(row)
+        local subZone = row.context and row.context.subZone
+        return "campfire", { sub = subZone ~= "" and subZone ~= row.zone and subZone or nil }
+    end,
 })
 ns.Style.AddArt("campfire", { "Interface\\Icons\\Spell_Fire_Fire", "Interface\\Icons\\INV_Sword_04" })
 

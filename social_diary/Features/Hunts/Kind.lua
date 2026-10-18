@@ -120,6 +120,14 @@ Hunts.T = T
 local LIST = "hunts"
 
 Journey.RegisterList(LIST, { cap = 400,
+    -- Fed to the group (Core/Sync/Feed.lua) only when it was luck, bad or
+    -- good: a hunt that went as hunts go is no story.
+    feed = function(rec, _, j)
+        local luck = Hunts.BadLuck(j, rec) and "bad" or Hunts.GoodLuck(rec) and "good" or nil
+        if not luck then return nil end
+        return "hunt", { luck = luck, lv = rec.level, title = rec.title, item = rec.item, need = rec.need,
+            kills = rec.kills, expected = rec.expected, foe = rec.name }
+    end,
     readNames = function(j, npcID)
         for _, hunt in ipairs(j.hunts or {}) do
             if hunt.npcID == npcID and hunt.name then return hunt.name end
